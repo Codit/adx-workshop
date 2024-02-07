@@ -842,22 +842,14 @@ In this task, we will use an `update policy` to filter the raw data in the `logs
   Answer:
 
   ```kql
+let ingestionLogsCount = toscalar(
+ingestionLogs
+| count);
 logsRaw
-| where ingestion_time() >= ago(1h)
-| count //1442786
-
-print ratio=todouble(93648)/todouble(1442786)
-
-
-let x=ingestionLogs
+| where ingestion_time() > ago(15m)
 | count
-| extend y=1;
-logsRaw
-| where ingestion_time() >= ago(1h)
-| count
-| extend y=1
-| join kind=leftouter x on $left.y==$right.y
-| extend ratio=todouble(Count1)/todouble(Count)
+| extend ratio = todouble(ingestionLogsCount) / Count
+| project Count, ratio, ingestionLogsCount
   ```
 </details>
 
